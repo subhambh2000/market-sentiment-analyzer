@@ -1,1 +1,1 @@
-rootProject.name = "sentiment-backend"
+rootProject.name = "sentinex-backend"
