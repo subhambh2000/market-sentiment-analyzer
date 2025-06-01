@@ -1,4 +1,4 @@
-package com.sentinex.sentinex_backend
+package com.sentinex
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class SentimentApplication
 
 fun main(args: Array<String>) {
-	runApplication<SentimentApplication>(*args)
+    runApplication<SentimentApplication>(*args)
 }

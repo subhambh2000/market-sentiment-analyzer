@@ -1,10 +1,10 @@
-package com.sentinex.sentinex_backend
+package com.sentinex
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class SentimentApplicationTests {
+class SentinexApplicationTests {
 
 	@Test
 	fun contextLoads() {
