@@ -1,0 +1,3 @@
+Summarize the sentiment and key news trends related to "{{keyword}}" based on the following articles:
+
+{{topContents}}
