@@ -15,7 +15,7 @@ data class NewsDTO(
             title = title,
             content = content,
             source = source,
-            tickers = tickers.joinToString(","),
+            tickers = tickers,
             publishedAt = publishedAt
         )
     }

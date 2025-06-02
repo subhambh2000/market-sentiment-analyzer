@@ -7,9 +7,12 @@ import com.google.genai.types.GenerateContentResponse
 import com.sentinex.dto.DailySentiment
 import com.sentinex.dto.KeywordSummaryResponse
 import com.sentinex.dto.SentimentResponseDTO
+import com.sentinex.dto.TickerSentimentDTO
+import com.sentinex.model.AggregatedSentiment
 import com.sentinex.model.NewsArticle
 import com.sentinex.model.SentimentAnalysis
 import com.sentinex.model.SentimentResult
+import com.sentinex.repository.AggregatedSentimentRepository
 import com.sentinex.repository.SentimentAnalysisRepository
 import com.sentinex.service.SentimentService
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +21,10 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class SentimentServiceImpl(private val sentimentAnalysisRepository: SentimentAnalysisRepository) : SentimentService {
+class SentimentServiceImpl(
+    private val sentimentAnalysisRepository: SentimentAnalysisRepository,
+    private val aggregatedSentimentRepository: AggregatedSentimentRepository
+) : SentimentService {
 
     @Value("\${api.key}")
     private lateinit var apiKey: String
@@ -49,12 +55,36 @@ class SentimentServiceImpl(private val sentimentAnalysisRepository: SentimentAna
             sentiment = result.sentiment,
             emotion = result.emotion,
         )
+        val analysis = sentimentAnalysisRepository.save(sentimentAnalysis)
 
-        return sentimentAnalysisRepository.save(sentimentAnalysis)
+        updateAggregateSentiments(analysis)
+
+        return analysis
+    }
+
+    override fun getTopSentimentTickers(
+        sort: String,
+        limit: Int,
+        date: LocalDate
+    ): List<TickerSentimentDTO> {
+        val aggregates = aggregatedSentimentRepository.findByDate(date)
+
+        val sortedAgg = when (sort) {
+            "positive" -> aggregates.sortedByDescending { it.avgSentiment }
+            else -> aggregates.sortedBy { it.avgSentiment }
+        }
+
+        return sortedAgg.take(limit).map {
+            TickerSentimentDTO(
+                it.ticker,
+                it.avgSentiment,
+                it.articleCount
+            )
+        }
     }
 
     override fun getTickerSentimentTrend(ticker: String): SentimentResponseDTO {
-        val results = sentimentAnalysisRepository.findByTickerLike(ticker)
+        val results = sentimentAnalysisRepository.findByTicker(ticker)
         val groupedResults = results.groupBy { it.analyzedAt.toLocalDate() }
         val dailySentiment = groupedResults.map { (date, entries) ->
             val avgScore = entries.map { it.sentiment }.average()
@@ -108,5 +138,32 @@ class SentimentServiceImpl(private val sentimentAnalysisRepository: SentimentAna
             config
         )
         return response
+    }
+
+    private fun updateAggregateSentiments(analysis: SentimentAnalysis) {
+        val analyzedDate = analysis.analyzedAt.toLocalDate()
+
+        analysis.article.tickers.forEach {
+            val existing = aggregatedSentimentRepository.findByTickerAndDate(it, analyzedDate)
+
+            if (existing != null) {
+                val totalSentiment = ((existing.avgSentiment * existing.articleCount) + analysis.sentiment)
+                val newArticleCount = existing.articleCount + 1
+                val newAvg = totalSentiment / newArticleCount
+
+                existing.avgSentiment = newAvg
+                existing.articleCount = newArticleCount
+
+                aggregatedSentimentRepository.save(existing)
+            } else {
+                val newAgg = AggregatedSentiment(
+                    ticker = it,
+                    avgSentiment = analysis.sentiment,
+                    date = analyzedDate,
+                    articleCount = 1
+                )
+                aggregatedSentimentRepository.save(newAgg)
+            }
+        }
     }
 }

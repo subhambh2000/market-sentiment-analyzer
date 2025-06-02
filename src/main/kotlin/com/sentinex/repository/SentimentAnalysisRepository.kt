@@ -8,10 +8,14 @@ import java.util.*
 
 
 interface SentimentAnalysisRepository : JpaRepository<SentimentAnalysis, UUID> {
-    @Query("SELECT s from SentimentAnalysis s where CONCAT(',',s.article.tickers,',') like CONCAT('%,',:ticker,',%')")
-    fun findByTickerLike(@Param("ticker") ticker: String): List<SentimentAnalysis>
+    @Query("SELECT s from SentimentAnalysis s where :ticker in elements(s.article.tickers) ")
+    fun findByTicker(@Param("ticker") ticker: String): List<SentimentAnalysis>
 
-    @Query("""SELECT s from SentimentAnalysis s where (LOWER(s.article.content) LIKE LOWER(CONCAT('%', :keyword, '%')) OR 
-        LOWER(s.article.title) LIKE LOWER(CONCAT('%', :keyword, '%')) )""")
+    @Query(
+        """SELECT s from SentimentAnalysis s where (LOWER(s.article.content) LIKE LOWER(CONCAT('%', :keyword, '%')) OR 
+        LOWER(s.article.title) LIKE LOWER(CONCAT('%', :keyword, '%')) )"""
+    )
     fun findByKeywordInArticle(@Param("keyword") keyword: String): List<SentimentAnalysis>
+
+
 }
