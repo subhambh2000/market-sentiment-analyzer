@@ -12,7 +12,7 @@ data class NewsArticle(
     @Column(columnDefinition = "TEXT") val content: String,
     val source: String,
     @ElementCollection
-    @CollectionTable("news_article_tickers", joinColumns = [JoinColumn(name = "article_id")])
+    @CollectionTable(name = "news_article_tickers", joinColumns = [JoinColumn(name = "article_id")])
     @Column(name = "ticker")
     val tickers: List<String>,
     val publishedAt: LocalDateTime,
