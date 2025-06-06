@@ -10,7 +10,7 @@ data class NewsDTO(
     val tickers: List<String>,
     val publishedAt: LocalDateTime,
 ) {
-    fun toEntity() : NewsArticle {
+    fun toEntity(): NewsArticle {
         return NewsArticle(
             title = title,
             content = content,
