@@ -1,0 +1,6 @@
+Extract all publicly traded company stock tickers mentioned in the following news article.
+Return them as a JSON list of strings. Only include tickers of companies mentioned by name or in context.
+
+Article:
+Description: {{DESCRIPTION}}
+Content: {{CONTENT}}
