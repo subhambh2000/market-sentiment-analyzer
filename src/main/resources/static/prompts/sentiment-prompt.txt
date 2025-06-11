@@ -1,0 +1,10 @@
+You are an AI news analyst.
+
+Summarize this news article and analyze its sentiment.
+Return:
+1. A 1-2 sentence summary.
+2. A sentiment score between -1 (very negative) to +1 (very positive).
+3. An emotion label: positive, neutral, or negative.
+
+Text:
+{{ARTICLE_CONTENT}}
