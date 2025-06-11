@@ -1,9 +1,7 @@
 package com.sentinex.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.genai.Client
 import com.google.genai.types.GenerateContentConfig
-import com.google.genai.types.GenerateContentResponse
 import com.sentinex.dto.DailySentiment
 import com.sentinex.dto.KeywordSummaryResponse
 import com.sentinex.dto.SentimentResponseDTO
@@ -14,8 +12,9 @@ import com.sentinex.model.SentimentAnalysis
 import com.sentinex.model.SentimentResult
 import com.sentinex.repository.AggregatedSentimentRepository
 import com.sentinex.repository.SentimentAnalysisRepository
+import com.sentinex.service.AIClientService
 import com.sentinex.service.SentimentService
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -23,14 +22,9 @@ import java.time.LocalDate
 @Service
 class SentimentServiceImpl(
     private val sentimentAnalysisRepository: SentimentAnalysisRepository,
-    private val aggregatedSentimentRepository: AggregatedSentimentRepository
+    private val aggregatedSentimentRepository: AggregatedSentimentRepository,
+    @Qualifier("AIClientService") private val aIClientService: AIClientService
 ) : SentimentService {
-
-    @Value("\${api.key}")
-    private lateinit var apiKey: String
-
-    @Value("\${model}")
-    private lateinit var model: String
 
     val objectMapper = ObjectMapper()
 
@@ -45,7 +39,7 @@ class SentimentServiceImpl(
 
         val finalPrompt = promptTemplate.replace("{{ARTICLE_CONTENT}}", article.content)
 
-        val response = getAIResponse(finalPrompt, config)
+        val response = aIClientService.getAIResponse(finalPrompt, config)
 
         val result = objectMapper.readValue(response?.text(), SentimentResult::class.java)
 
@@ -118,7 +112,7 @@ class SentimentServiceImpl(
         val summaryPrompt = promptTemplate.replace("{{keyword}}", keyword)
             .replace("{{topContent}}", topContent)
 
-        val summaryResponse = getAIResponse(summaryPrompt)?.text() ?: "Not relevant summary generated"
+        val summaryResponse = aIClientService.getAIResponse(summaryPrompt)?.text() ?: "Not relevant summary generated"
 
         return KeywordSummaryResponse(
             keyword = keyword,
@@ -127,17 +121,6 @@ class SentimentServiceImpl(
             avgScore = avg
         )
 
-    }
-
-    private fun getAIResponse(prompt: String, config: GenerateContentConfig? = null): GenerateContentResponse? {
-        val client = Client.builder().apiKey(apiKey).build()
-
-        val response = client.models.generateContent(
-            model,
-            prompt,
-            config
-        )
-        return response
     }
 
     private fun updateAggregateSentiments(analysis: SentimentAnalysis) {

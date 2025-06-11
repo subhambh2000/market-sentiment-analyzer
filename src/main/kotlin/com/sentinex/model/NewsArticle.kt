@@ -9,8 +9,10 @@ import java.util.*
 data class NewsArticle(
     @Id @GeneratedValue val id: UUID? = null,
     val title: String,
+    val description: String?,
     @Column(columnDefinition = "TEXT") val content: String,
     val source: String,
+    val url: String,
     @ElementCollection
     @CollectionTable(name = "news_article_tickers", joinColumns = [JoinColumn(name = "article_id")])
     @Column(name = "ticker")
