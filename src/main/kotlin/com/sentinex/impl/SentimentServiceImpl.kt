@@ -14,7 +14,6 @@ import com.sentinex.repository.AggregatedSentimentRepository
 import com.sentinex.repository.SentimentAnalysisRepository
 import com.sentinex.service.AIClientService
 import com.sentinex.service.SentimentService
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -23,7 +22,7 @@ import java.time.LocalDate
 class SentimentServiceImpl(
     private val sentimentAnalysisRepository: SentimentAnalysisRepository,
     private val aggregatedSentimentRepository: AggregatedSentimentRepository,
-    @Qualifier("AIClientService") private val aIClientService: AIClientService
+    private val aIClientService: AIClientService
 ) : SentimentService {
 
     val objectMapper = ObjectMapper()

@@ -33,7 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.google.genai:google-genai:1.2.0")
     implementation("com.h2database:h2:2.3.232")
-    implementation("org.springframework:spring-webflux:7.0.0-M5")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
@@ -41,6 +41,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("io.github.cdimascio:dotenv-java:3.0.0")
 }
 
 kotlin {

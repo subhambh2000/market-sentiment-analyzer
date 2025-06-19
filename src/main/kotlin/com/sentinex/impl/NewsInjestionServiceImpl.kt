@@ -6,14 +6,13 @@ import com.google.genai.types.GenerateContentConfig
 import com.sentinex.model.NewsArticle
 import com.sentinex.service.AIClientService
 import com.sentinex.service.NewsInjestionService
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 
 @Service
 class NewsInjestionServiceImpl(
     private val newsApiClient: NewsApiClient,
-    @Qualifier("AIClientService") private val aIClientService: AIClientService,
+    private val aIClientService: AIClientService,
 ) : NewsInjestionService {
     final val mapper = ObjectMapper()
 
