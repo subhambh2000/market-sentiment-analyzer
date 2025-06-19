@@ -1,1 +1,1 @@
-rootProject.name = "sentinex-backend"
+rootProject.name = "sentinex-app"
