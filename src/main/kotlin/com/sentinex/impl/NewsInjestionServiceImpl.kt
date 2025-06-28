@@ -32,7 +32,7 @@ class NewsInjestionServiceImpl(
     }
 
     override fun extractTickerFromArticle(description: String?, content: String): List<String> {
-        val promptTemplate = ClassPathResource("prompts/ticker-extraction-prompt.txt")
+        val promptTemplate = ClassPathResource("static/prompts/ticker-extraction-prompt.txt")
             .inputStream.bufferedReader().use { it.readText() }
 
         val config = GenerateContentConfig.builder()

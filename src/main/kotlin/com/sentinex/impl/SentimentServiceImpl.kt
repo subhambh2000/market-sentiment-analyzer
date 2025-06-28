@@ -28,7 +28,7 @@ class SentimentServiceImpl(
     val objectMapper = ObjectMapper()
 
     override fun analyze(article: NewsArticle): SentimentAnalysis {
-        val promptTemplate = ClassPathResource("prompts/sentiment-prompt.txt")
+        val promptTemplate = ClassPathResource("static/prompts/sentiment-prompt.txt")
             .inputStream.bufferedReader().use { it.readText() }
 
         val config = GenerateContentConfig.builder()
@@ -94,7 +94,7 @@ class SentimentServiceImpl(
     }
 
     override fun summarizeByKeyword(keyword: String): KeywordSummaryResponse {
-        val promptTemplate = ClassPathResource("prompts/summary-prompt.txt")
+        val promptTemplate = ClassPathResource("static/prompts/summary-prompt.txt")
             .inputStream.bufferedReader().use { it.readText() }
 
         val summaryResult = sentimentAnalysisRepository.findByKeywordInArticle(keyword)
